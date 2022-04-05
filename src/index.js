@@ -10,11 +10,6 @@ const inputField = document.querySelector('#search-box');
 const countryList = document.querySelector('.country-list');
 countryList.style.padding = "0";
 const countryInfo = document.querySelector('.country-info');
-const li = document.querySelectorAll('li');
-// li.style.listStyleType = "none";
-
-
-
 
 
 inputField.addEventListener('input', debounce(omInput, DEBOUNCE_DELAY));
@@ -22,22 +17,23 @@ inputField.addEventListener('input', debounce(omInput, DEBOUNCE_DELAY));
 function omInput(event){
     const inputText = event.target.value;
     const capital = inputText.trim();
-    
+  resetCountryInfo();
        
-    fetchCountries(capital).then(data => {
-        if (data.length > 10) {
-            Notify.info('Too many matches found. Please enter a more specific name.')
-            return;
-        } else if (data.length === 1) {
-          const countryMarkup = data.map(makeOneCountryMarkup).join('');
-            countryInfo.insertAdjacentHTML('beforeend', countryMarkup);  
-            return;
-        } else if (data.length != 1) {
-          const countryListMarkup = data.map(makeCountryListMarkup).join('');
-            countryList.insertAdjacentHTML('beforeend', countryListMarkup);  
-            return;
-        }       
-});   
+  fetchCountries(capital).then(result => {
+    
+    if (result.length > 10) {
+      Notify.info('Too many matches found. Please enter a more specific name.')
+      return;
+    } else if (result.length === 1) {
+      const countryMarkup = result.map(makeOneCountryMarkup).join('');
+      countryInfo.insertAdjacentHTML('beforeend', countryMarkup);
+      return;
+    } else if (result.length != 1) {
+      const countryListMarkup = result.map(makeCountryListMarkup).join('');
+      countryList.insertAdjacentHTML('beforeend', countryListMarkup);
+      return;
+    }
+  });   
 };
 
 const makeCountryListMarkup = (element) => {
@@ -65,39 +61,14 @@ const makeOneCountryMarkup = (element) => {
                 </li>
                 <li style="list-style-type: none;"><p>Capital: ${element.capital}</p></li>
                 <li style="list-style-type: none;"><p>Population: ${element.population}</p></li>
-                <li style="list-style-type: none;"><p>Languages: ${element.languages}</p></li>
+                <li style="list-style-type: none;"><p>Languages: ${Object.values(element.languages)}</p></li>
                 </ul>`;
 };
- 
 
-// const makeGalleryMarkup = galleryItems.map(makeGalleryItemMarkup).join('');
+function resetCountryInfo() {
+ countryList.innerHTML = "";
+ countryInfo.innerHTML = ""; 
+}; 
 
-// const galleryElements = document.querySelector('.gallery');
 
-// galleryElements.insertAdjacentHTML('beforeend', makeGalleryMarkup);
-////////////////
-// name.official - полное имя страны
-// capital - столица
-// population - население
-// flags.svg - ссылка на изображение флага
-// languages - массив языков
-////////////////
 
-// const makeGalleryItemMarkup = (element) => {
-//     return `<div class="gallery__item">
-//             <a class="gallery__link" href="large-image.jpg">
-//             <img
-//             class="gallery__image"
-//             src="${element.preview}"
-//             data-source="${element.original}"
-//             alt="${element.description}"
-//             />
-//             </a>
-//             </div>`;
-// };
-
-// const makeGalleryMarkup = galleryItems.map(makeGalleryItemMarkup).join('');
-
-// const galleryElements = document.querySelector('.gallery');
-
-// galleryElements.insertAdjacentHTML('beforeend', makeGalleryMarkup);
